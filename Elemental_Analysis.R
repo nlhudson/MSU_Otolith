@@ -13,31 +13,11 @@ element_to_Sr_BV = element_to_Sr[element_to_Sr$Drainage %in% "Beaverhead", ]
 element_to_Sr_RB = element_to_Sr[element_to_Sr$Drainage %in% "Ruby", ]
 
 # Calcium to Sr
-ggplot(data = element_to_Sr_BH_few, aes(x = X87Sr.86Sr, y = Sr.Ca, color = Tributary)) +
-  geom_point() +
+ggplot(data = element_to_Sr_BH_few, aes(x = X87Sr.86Sr, y = Mg.Ca, color = Tributary)) +
+  geom_point(size = 8) +
   facet_wrap(~Drainage) 
 
-# Barium to Sr
-ggplot(data = element_to_Sr_BH, aes(x = X87Sr.86Sr, y = Ba_mgL, color = Tributary)) +
-  geom_point() +
-  facet_wrap(~Drainage)
-
-# Magnesium to Sr
-ggplot(data = element_to_Sr_BH, aes(x = X87Sr.86Sr, y = Mg_mgL, color = Tributary)) +
-  geom_point() +
-  facet_wrap(~Drainage)
-
-# Manganses to Sr
-ggplot(data = element_to_Sr_BH, aes(x = X87Sr.86Sr, y = Mn_mgL, color = Tributary)) +
-  geom_point() +
-  facet_wrap(~Drainage)
-
-# Strontium element to ratio
-ggplot(data = element_to_Sr_BH, aes(x = X87Sr.86Sr, y = Sr_mgL, color = Tributary)) +
-  geom_point() +
-  facet_wrap(~Drainage)
-
-
+# overall strontium differentiation
 ggplot(data = element_to_Sr, aes(x = Tributary, y = X87Sr.86Sr)) +
   geom_point() +
   facet_wrap(~Drainage)
@@ -46,7 +26,7 @@ ggplot(data = element_to_Sr, aes(x = Tributary, y = X87Sr.86Sr)) +
 #### PCA Analysis ####
 elemental_data <- read.csv('Element_to_Sr.csv')
 elemental_data = elemental_data[-6, ] # removing canyon creek
-elemental_ratios = elemental_data[, -c(1:11)] # extracting just the ratios we want
+elemental_ratios = elemental_data[, -c(1:8, 14:15)] # extracting just the ratios we want
 
 # Standardize the data
 standardized_data <- scale(elemental_ratios)  
