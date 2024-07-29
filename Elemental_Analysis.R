@@ -4,34 +4,48 @@ library(ggplot2)
 #### Elements to Sr Relationships ####
 element_to_Sr = read.csv('Element_to_Sr.csv')
 
+element_to_Sr_BH = element_to_Sr[element_to_Sr$Drainage %in% "Big Hole", ]
+
+element_to_Sr_BH_few = element_to_Sr_BH[-c(11:13, 16:37),]
+
+element_to_Sr_BV = element_to_Sr[element_to_Sr$Drainage %in% "Beaverhead", ]
+
+element_to_Sr_RB = element_to_Sr[element_to_Sr$Drainage %in% "Ruby", ]
+
 # Calcium to Sr
-ggplot(data = element_to_Sr, aes(x = X87Sr.86Sr, y = Ca_mgL, color = Tributary)) +
+ggplot(data = element_to_Sr_BH_few, aes(x = X87Sr.86Sr, y = Sr.Ca, color = Tributary)) +
   geom_point() +
   facet_wrap(~Drainage) 
 
 # Barium to Sr
-ggplot(data = element_to_Sr, aes(x = X87Sr.86Sr, y = Ba_mgL, color = Tributary)) +
+ggplot(data = element_to_Sr_BH, aes(x = X87Sr.86Sr, y = Ba_mgL, color = Tributary)) +
   geom_point() +
   facet_wrap(~Drainage)
 
 # Magnesium to Sr
-ggplot(data = element_to_Sr, aes(x = X87Sr.86Sr, y = Mg_mgL, color = Tributary)) +
+ggplot(data = element_to_Sr_BH, aes(x = X87Sr.86Sr, y = Mg_mgL, color = Tributary)) +
   geom_point() +
   facet_wrap(~Drainage)
 
 # Manganses to Sr
-ggplot(data = element_to_Sr, aes(x = X87Sr.86Sr, y = Mn_mgL, color = Tributary)) +
+ggplot(data = element_to_Sr_BH, aes(x = X87Sr.86Sr, y = Mn_mgL, color = Tributary)) +
   geom_point() +
   facet_wrap(~Drainage)
 
 # Strontium element to ratio
-ggplot(data = element_to_Sr, aes(x = X87Sr.86Sr, y = Sr_mgL, color = Tributary)) +
+ggplot(data = element_to_Sr_BH, aes(x = X87Sr.86Sr, y = Sr_mgL, color = Tributary)) +
+  geom_point() +
+  facet_wrap(~Drainage)
+
+
+ggplot(data = element_to_Sr, aes(x = Tributary, y = X87Sr.86Sr)) +
   geom_point() +
   facet_wrap(~Drainage)
 
 
 #### PCA Analysis ####
-elemental_data <- read.csv('Elemental_Ratios.csv')
+elemental_data <- read.csv('Element_to_Sr.csv')
+elemental_data = elemental_data[-6, ] # removing canyon creek
 elemental_ratios = elemental_data[, -c(1:11)] # extracting just the ratios we want
 
 # Standardize the data
