@@ -32,6 +32,7 @@ library(FSA)
 trib_fish_data_full = read.csv("2024 Trib Fish Data.csv")
 trib_fish_data_full$Length_mm = as.numeric(trib_data$Length_mm)
 trib_fish_data_full$Mass_g = as.numeric(trib_data$Mass_g)
+trib_fish_data_full$Site = as.factor(trib_data$Site)
 
 depletion_data = trib_fish_data_full[trib_fish_data_full$Method %in% c("Pass 1", "Pass 2", "Pass 3"),]
 depletion_data_onlytrout = depletion_data[depletion_data$Species %in% c("BRN", "RBT", "BRK"),]
@@ -352,7 +353,281 @@ summary(k_wisconsin_BRN_est)
 confint(k_wisconsin_BRN_est) # higher se than leslie
 
 
-#### Summary ####
+#### JAGS Model ####
+library(rjags)
+library(R2jags)
+library(here)
+
+## Tim basic model for individual q estimation 
+modelScript.name <- "Depletion.txt"
+jagsscript <- cat("
+
+model {
+    catch[1] ~ dbin(q,Np);
+    Np ~ dpois(N);
+    for(k in 2:Npass){
+       catch[k] ~ dbin(q,(Np-sum(catch[1:(k-1)])));
+    }
+    #q ~ dunif(0,1);
+    q ~ dbeta(2,2);
+    N ~ dunif(minN,3000)
+} ",file = here(modelScript.name))
+
+# simulated data for model validation
+qsim <- 0.5
+Nsim <- 300
+Npass <- 3
+
+catchsim <- rep(NA,3)
+
+catchsim[1] <- rbinom(1,Nsim,qsim)
+
+for(k in 2:Npass){
+  #k <- 2
+  catchsim[k] <- rbinom(1,Nsim-sum(catchsim[1:(k-1)]),qsim)
+  
+}
+
+hist(rbeta(1000,2,2))
+
+# Generate inputs for JAGS
+simdata = list(Npass=Npass,catch=catchsim,minN = sum(catchsim)) # sim data
+Params = c('q','Np')
+
+# running JAGS model based on simulated data
+mod_lm <- R2jags::jags(simdata, parameters.to.save = Params,
+                       model.file = here(modelScript.name), n.chains = 3, n.burnin = 100000/2, n.thin = 10,
+                       n.iter = 100000)
+
+plot(mod_lm)
+mod_lm$BUGSoutput$summary["Np",]
+mod_lm$BUGSoutput$summary["q",]
+
+mod_lm$BUGSoutput$sims.list$Np %>% hist()
+mod_lm$BUGSoutput$sims.list$q %>% hist()
+mod_lm$BUGSoutput$sims.list$Np %>% quantile(c(0.0275,0.975))
+
+#### JAGS Estimation ####
+# Alder
+alder_catch = leslie_alder$Catch # observed data
+alder_npass = 3
+minN = sum(leslie_alder$Catch)
+alder_data = list(Npass=alder_npass,catch=alder_catch, minN = minN) 
+
+mod_lm_alder <- R2jags::jags(alder_data, parameters.to.save = Params,
+                       model.file = here(modelScript.name), n.chains = 3, n.burnin = 100000/2, n.thin = 10,
+                       n.iter = 100000)
+
+mod_lm_alder$BUGSoutput$summary["Np",]
+mod_lm_alder$BUGSoutput$summary["q",]
+plot(mod_lm_alder)
+
+# Blacktail
+blacktail_catch = leslie_blacktail_BRN$Catch # observed data
+blacktail_npass = 3
+minN = sum(leslie_blacktail_BRN$Catch)
+blacktail_data = list(Npass=blacktail_npass,catch=blacktail_catch, minN = minN) 
+
+mod_lm_blacktail <- R2jags::jags(blacktail_data, parameters.to.save = Params,
+                             model.file = here(modelScript.name), n.chains = 3, n.burnin = 100000/2, n.thin = 10,
+                             n.iter = 100000)
+
+mod_lm_blacktail$BUGSoutput$summary["Np",]
+mod_lm_blacktail$BUGSoutput$summary["q",]
+plot(mod_lm_blacktail)
+
+# Camp
+camp_catch = leslie_camp_BRN$Catch # observed data
+camp_npass = 3
+minN = sum(leslie_camp_BRN$Catch)
+camp_data = list(Npass=camp_npass,catch=camp_catch, minN = minN) 
+
+mod_lm_camp <- R2jags::jags(camp_data, parameters.to.save = Params,
+                             model.file = here(modelScript.name), n.chains = 3, n.burnin = 100000/2, n.thin = 10,
+                             n.iter = 100000)
+
+mod_lm_camp$BUGSoutput$summary["Np",]
+mod_lm_camp$BUGSoutput$summary["q",]
+plot(mod_lm_camp)
+
+# Canyon
+canyon_catch = leslie_canyon_BRN$Catch # observed data
+canyon_npass = 3
+minN = sum(leslie_canyon_BRN$Catch)
+canyon_data = list(Npass=canyon_npass,catch=canyon_catch, minN = minN) 
+
+mod_lm_canyon <- R2jags::jags(canyon_data, parameters.to.save = Params,
+                             model.file = here(modelScript.name), n.chains = 3, n.burnin = 100000/2, n.thin = 10,
+                             n.iter = 100000)
+
+mod_lm_canyon$BUGSoutput$summary["Np",]
+mod_lm_canyon$BUGSoutput$summary["q",]
+plot(mod_lm_canyon)
+
+# Cherry
+cherry_catch = leslie_cherry_BRN$Catch # observed data
+cherry_npass = 3
+minN = sum(leslie_cherry_BRN$Catch)
+cherry_data = list(Npass=cherry_npass,catch=cherry_catch, minN = minN) 
+
+mod_lm_cherry <- R2jags::jags(cherry_data, parameters.to.save = Params,
+                             model.file = here(modelScript.name), n.chains = 3, n.burnin = 100000/2, n.thin = 10,
+                             n.iter = 100000)
+
+mod_lm_cherry$BUGSoutput$summary["Np",]
+mod_lm_cherry$BUGSoutput$summary["q",]
+plot(mod_lm_cherry)
+
+# Cox
+cox_catch = leslie_cox_BRN$Catch # observed data
+cox_npass = 3
+minN = sum(leslie_cox_BRN$Catch)
+cox_data = list(Npass=cox_npass,catch=cox_catch, minN = minN) 
+
+mod_lm_cox <- R2jags::jags(cox_data, parameters.to.save = Params,
+                             model.file = here(modelScript.name), n.chains = 3, n.burnin = 100000/2, n.thin = 10,
+                             n.iter = 100000)
+
+mod_lm_cox$BUGSoutput$summary["Np",]
+mod_lm_cox$BUGSoutput$summary["q",]
+plot(mod_lm_cox)
+
+# Deep
+deep_catch = leslie_deep_BRN$Catch # observed data
+deep_npass = 2
+minN = sum(leslie_deep_BRN$Catch)
+deep_data = list(Npass=deep_npass,catch=deep_catch, minN = minN) 
+
+mod_lm_deep <- R2jags::jags(deep_data, parameters.to.save = Params,
+                             model.file = here(modelScript.name), n.chains = 3, n.burnin = 100000/2, n.thin = 10,
+                             n.iter = 100000)
+
+mod_lm_deep$BUGSoutput$summary["Np",]
+mod_lm_deep$BUGSoutput$summary["q",]
+plot(mod_lm_deep)
+
+# Grasshopper
+grasshopper_catch = leslie_grasshopper_BRN$Catch # observed data
+grasshopper_npass = 3
+minN = sum(leslie_grasshopper_BRN$Catch)
+grasshopper_data = list(Npass=grasshopper_npass,catch=grasshopper_catch, minN = minN) 
+
+mod_lm_grasshopper <- R2jags::jags(grasshopper_data, parameters.to.save = Params,
+                             model.file = here(modelScript.name), n.chains = 3, n.burnin = 100000/2, n.thin = 10,
+                             n.iter = 100000)
+
+mod_lm_grasshopper$BUGSoutput$summary["Np",]
+mod_lm_grasshopper$BUGSoutput$summary["q",]
+plot(mod_lm_grasshopper)
+
+# Mill
+mill_catch = leslie_mill_BRN$Catch # observed data
+mill_npass = 3
+minN = sum(leslie_mill_BRN$Catch)
+mill_data = list(Npass=mill_npass,catch=mill_catch, minN = minN) 
+
+mod_lm_mill <- R2jags::jags(mill_data, parameters.to.save = Params,
+                             model.file = here(modelScript.name), n.chains = 3, n.burnin = 100000/2, n.thin = 10,
+                             n.iter = 100000)
+
+mod_lm_mill$BUGSoutput$summary["Np",]
+mod_lm_mill$BUGSoutput$summary["q",]
+plot(mod_lm_mill)
+
+# Moose 
+moose_catch = leslie_moose_BRN$Catch # observed data
+moose_npass = 3
+minN = sum(leslie_moose_BRN$Catch)
+moose_data = list(Npass=moose_npass,catch=moose_catch, minN = minN) 
+
+mod_lm_moose <- R2jags::jags(moose_data, parameters.to.save = Params,
+                             model.file = here(modelScript.name), n.chains = 3, n.burnin = 100000/2, n.thin = 10,
+                             n.iter = 100000)
+
+mod_lm_moose$BUGSoutput$summary["Np",]
+mod_lm_moose$BUGSoutput$summary["q",]
+plot(mod_lm_moose)
+
+# Silver Springs
+silver_catch = leslie_silver_BRN$Catch # observed data
+silver_npass = 3
+minN = sum(leslie_silver_BRN$Catch)
+silver_data = list(Npass=silver_npass,catch=silver_catch, minN = minN) 
+
+mod_lm_silver <- R2jags::jags(silver_data, parameters.to.save = Params,
+                             model.file = here(modelScript.name), n.chains = 3, n.burnin = 100000/2, n.thin = 10,
+                             n.iter = 100000)
+
+mod_lm_silver$BUGSoutput$summary["Np",]
+mod_lm_silver$BUGSoutput$summary["q",]
+plot(mod_lm_silver)
+
+# Stone 
+stone_catch = leslie_stone_BRN$Catch # observed data
+stone_npass = 2
+minN = sum(leslie_stone_BRN$Catch)
+stone_data = list(Npass=stone_npass,catch=stone_catch, minN = minN) 
+
+mod_lm_stone <- R2jags::jags(stone_data, parameters.to.save = Params,
+                              model.file = here(modelScript.name), n.chains = 3, n.burnin = 100000/2, n.thin = 10,
+                              n.iter = 100000)
+
+mod_lm_stone$BUGSoutput$summary["Np",]
+mod_lm_stone$BUGSoutput$summary["q",]
+plot(mod_lm_stone)
+
+# Trapper
+trapper_catch = leslie_trapper_BRN$Catch # observed data
+trapper_npass = 3
+minN = sum(leslie_trapper_BRN$Catch)
+trapper_data = list(Npass=trapper_npass,catch=trapper_catch, minN = minN) 
+
+mod_lm_trapper <- R2jags::jags(trapper_data, parameters.to.save = Params,
+                              model.file = here(modelScript.name), n.chains = 3, n.burnin = 100000/2, n.thin = 10,
+                              n.iter = 100000)
+
+mod_lm_trapper$BUGSoutput$summary["Np",]
+mod_lm_trapper$BUGSoutput$summary["q",]
+plot(mod_lm_trapper)
+
+# Wisconsin
+wisconsin_catch = leslie_wisconsin_BRN$Catch # observed data
+wisconsin_npass = 3
+minN = sum(leslie_wisconsin_BRN$Catch)
+wisconsin_data = list(Npass=wisconsin_npass,catch=wisconsin_catch, minN = minN) 
+
+mod_lm_wisconsin <- R2jags::jags(wisconsin_data, parameters.to.save = Params,
+                              model.file = here(modelScript.name), n.chains = 3, n.burnin = 100000/2, n.thin = 10,
+                              n.iter = 100000)
+
+mod_lm_wisconsin$BUGSoutput$summary["Np",]
+mod_lm_wisconsin$BUGSoutput$summary["q",]
+plot(mod_lm_wisconsin)
+
+#### Comparison ####
+
+## comparing k-pass CI with JAGS CI
+# alder
+mod_lm_alder$BUGSoutput$summary["Np",] # jags mean Np
+summary(k_alder_BRN_est) # k-pass mean Np
+
+mod_lm_alder$BUGSoutput$summary["Np",7] - mod_lm_alder$BUGSoutput$summary["Np",3] # jags 95% CI: 105
+confint(k_alder_BRN_est)[3] - confint(k_alder_BRN_est)[1] # k-pass 95% CI: 99
+
+# blacktail
+mod_lm_blacktail$BUGSoutput$summary["Np",] # jags mean Np
+summary(k_blacktail_BRN_est) # k-pass mean Np
+
+mod_lm_blacktail$BUGSoutput$summary["Np",7] - mod_lm_blacktail$BUGSoutput$summary["Np",3] # jags 95% CI: 26
+confint(k_blacktail_BRN_est)[3] - confint(k_blacktail_BRN_est)[1] # k-pass 95% CI: 16
+
+# canyon
+mod_lm_canyon$BUGSoutput$summary["Np",] # jags mean Np
+summary(k_canyon_BRN_est) # k-pass mean Np
+
+mod_lm_canyon$BUGSoutput$summary["Np",7] - mod_lm_canyon$BUGSoutput$summary["Np",3] # jags 95% CI: 421
+confint(k_canyon_BRN_est)[3] - confint(k_canyon_BRN_est)[1] # k-pass 95% CI: 15
+
 
 # K pass has lower standard error in half of the estimates compared to leslie method
 # highly linear depletions favor the leslie method, such as in Grasshopper BRN
@@ -421,14 +696,32 @@ k_uci = c(confint(k_alder_BRN_est)[3], confint(k_blacktail_BRN_est)[3],
           confint(k_silver_BRN_est)[3], confint(k_silver_RBT_est)[3], confint(k_trapper_BRN_est)[3],
           confint(k_wisconsin_BRN_est)[3])
 
-
 Site = c("Alder", "Blacktail", "Camp", "Camp", "Canyon","Canyon","Canyon","Cherry","Cox","Deep","Grasshopper","Grasshopper",
          "Mill", "Moose", "Moose", "Silver", "Silver", "Trapper","Wisconsin")
 
 Species = c("BRN", "BRN","BRN","BRK","BRN","RBT","BRK","BRN","BRN","RBT","BRN","BRK","BRN","BRN","RBT",
             "BRN","RBT","BRN","BRN")
 
-df = data.frame(cbind(Site, Species, leslie_estimate, leslie_se, leslie_lci, leslie_uci, k_estimate, k_lci, k_uci))
+jags_est = c(mod_lm_alder$BUGSoutput$summary["Np",1], mod_lm_blacktail$BUGSoutput$summary["Np",1],mod_lm_camp$BUGSoutput$summary["Np",1],
+             mod_lm_canyon$BUGSoutput$summary["Np",1],mod_lm_cherry$BUGSoutput$summary["Np",1],mod_lm_cox$BUGSoutput$summary["Np",1],
+             mod_lm_grasshopper$BUGSoutput$summary["Np",1],mod_lm_mill$BUGSoutput$summary["Np",1],mod_lm_moose$BUGSoutput$summary["Np",1],
+             mod_lm_silver$BUGSoutput$summary["Np",1],mod_lm_trapper$BUGSoutput$summary["Np",1],mod_lm_wisconsin$BUGSoutput$summary["Np",1])
+  
+jags_lci = c(mod_lm_alder$BUGSoutput$summary["Np",3], mod_lm_blacktail$BUGSoutput$summary["Np",3],mod_lm_camp$BUGSoutput$summary["Np",3],
+             mod_lm_canyon$BUGSoutput$summary["Np",3],mod_lm_cherry$BUGSoutput$summary["Np",3],mod_lm_cox$BUGSoutput$summary["Np",3],
+             mod_lm_grasshopper$BUGSoutput$summary["Np",3],mod_lm_mill$BUGSoutput$summary["Np",3],mod_lm_moose$BUGSoutput$summary["Np",3],
+             mod_lm_silver$BUGSoutput$summary["Np",3],mod_lm_trapper$BUGSoutput$summary["Np",3],mod_lm_wisconsin$BUGSoutput$summary["Np",3])
+
+jags_uci = c(mod_lm_alder$BUGSoutput$summary["Np",7], mod_lm_blacktail$BUGSoutput$summary["Np",7],mod_lm_camp$BUGSoutput$summary["Np",7],
+             mod_lm_canyon$BUGSoutput$summary["Np",7],mod_lm_cherry$BUGSoutput$summary["Np",7],mod_lm_cox$BUGSoutput$summary["Np",7],
+             mod_lm_grasshopper$BUGSoutput$summary["Np",7],mod_lm_mill$BUGSoutput$summary["Np",7],mod_lm_moose$BUGSoutput$summary["Np",7],
+             mod_lm_silver$BUGSoutput$summary["Np",7],mod_lm_trapper$BUGSoutput$summary["Np",7],mod_lm_wisconsin$BUGSoutput$summary["Np",7])
+
+jags_Site = c("Alder", "Blacktail", "Camp", "Canyon","Cherry","Cox","Grasshopper",
+         "Mill", "Moose", "Silver", "Trapper","Wisconsin")
+
+
+df = data.frame(cbind(Site, Species, leslie_estimate, leslie_se, leslie_lci, leslie_uci, k_estimate, k_lci, k_uci)) # for comparing K pass with leslie
 df$leslie_estimate = as.numeric(df$leslie_estimate)
 df$leslie_se = as.numeric(df$leslie_se)
 df$leslie_lci = as.numeric(df$leslie_lci)
@@ -441,6 +734,53 @@ view(df)
 lci = (df$leslie_uci - df$leslie_lci)
 kci = (df$k_uci - df$k_lci)
 view(lci - kci) # the K-pass method produces smaller confidence intervals at every site besides grasshopper
+
+
+## Comparison of K-Pass and JAGS 
+
+k_estimate_BRN = subset(k_estimate, Species == "BRN") # just BRN for K pass to compare to JAGS
+k_lci_BRN = subset(k_lci, Species == "BRN")
+k_uci_BRN = subset(k_uci, Species == "BRN")
+k_pass_brn = data.frame(k_estimate_BRN, k_lci_BRN, k_uci_BRN, jags_Site)
+
+k_pass_brn <- k_pass_brn %>% # adding method and renaming columns
+  mutate(Method = "K-Pass") %>%
+  rename("Np" = k_estimate_BRN, "lci" = k_lci_BRN, "uci" = k_uci_BRN, "Site" = jags_Site)
+
+jags_brn = data.frame(cbind(jags_Site, jags_est, jags_lci, jags_uci)) # just BRN JAGS to compare to K-pass
+jags_brn$jags_est = as.numeric(jags_brn$jags_est)
+jags_brn$jags_lci = as.numeric(jags_brn$jags_lci)
+jags_brn$jags_uci = as.numeric(jags_brn$jags_uci)
+
+jags_brn <- jags_brn %>% # adding method and renaming columns
+  mutate(Method = "JAGS") %>%
+  rename("Np" = jags_est, "lci" = jags_lci, "uci" = jags_uci, "Site" = jags_Site, )
+
+combined_data <- bind_rows(k_pass_brn, jags_brn) # combining JAGS and K-Pass data
+
+ggplot(combined_data, aes(x=Site, y = Np, color = Method)) +
+  geom_point(position = position_dodge(0.8), size = 3) +
+  geom_errorbar(aes(ymin = lci, ymax = uci, width = 0.5, linetype = "95% CI",), 
+                position = position_dodge(0.8), size = 0.8) +
+  scale_y_continuous(breaks = seq(-205, 2200, by = 200)) +
+  theme_grey(base_size = 20) +
+  theme(axis.text.x = element_text(angle = -45, hjust = -0.05)) +
+  scale_linetype_manual(values = c("95% CI" = "solid"), name = "Error Bars") +
+  labs (y = "Np") +
+  ggtitle ("JAGS vs K-Pass Abundance:BRN")
+
+
+## Comaprison of K-Pass and Leslie
+ggplot(df, aes(x=Site, y = k_estimate, color = Species)) +
+  geom_point(position = position_dodge(0.5), size = 3) +
+  geom_errorbar(aes(ymin = k_lci, ymax = k_uci, width = 0.5, linetype = "95% CI",), 
+                position = position_dodge(0.5), size = 0.8) +
+  scale_y_continuous(breaks = seq(0, 2000, by = 200)) +
+  theme_grey(base_size = 20) +
+  theme(axis.text.x = element_text(angle = -45, hjust = -0.05)) +
+  scale_linetype_manual(values = c("95% CI" = "solid"), name = "Error Bars") +
+  labs (y = "K-Pass Abundance")
+
 
 ggplot(df, aes(x=Site, y = leslie_estimate, color = Species)) +
   geom_point(position = position_dodge(0.5), size = 3) +
