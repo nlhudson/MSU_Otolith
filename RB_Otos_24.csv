@@ -1,0 +1,83 @@
+Species ,Waterbody,Date Collected,Year ,Sample Number,ID,Head or Whole,Length_mm,Mass_g,Location ,Sex,Fin Clip Collected?,Tissue Collected?,Stomach?,Otolith Collected?
+BRN,RB,4/17/24,24,1,BRN.RB.24.1,Head,362,N/A,"Start: (45.43387, -112.25721) End: (45.44488, -112.27897)",U,Y,Y,N,Y
+BRN,RB,4/17/24,24,2,BRN.RB.24.2,Head,296,235,"Start: (45.43387, -112.25721) End: (45.44488, -112.27897)",U,Y,Y,N,Y
+BRN,RB,4/17/24,24,3,BRN.RB.24.3,Whole,134,20,"Start: (45.43387, -112.25721) End: (45.44488, -112.27897)",U,Y,Y,Y,Y
+BRN,RB,4/17/24,24,4,BRN.RB.24.4,Head,179,55,"Start: (45.43387, -112.25721) End: (45.44488, -112.27897)",U,Y,Y,N,Y
+BRN,RB,4/17/24,24,5,BRN.RB.24.5,Head,146,30,"Start: (45.43387, -112.25721) End: (45.44488, -112.27897)",U,Y,Y,N,Y
+BRN,RB,4/17/24,24,6,BRN.RB.24.6,Head,176,55,"Start: (45.43387, -112.25721) End: (45.44488, -112.27897)",U,Y,Y,N,Y
+BRN,RB,4/17/24,24,7,BRN.RB.24.7,Head,338,395,"Start: (45.43387, -112.25721) End: (45.44488, -112.27897)",U,Y,Y,N,Y
+BRN,RB,4/17/24,24,8,BRN.RB.24.8,Head,316,305,"Start: (45.43387, -112.25721) End: (45.44488, -112.27897)",U,Y,Y,N,Y
+BRN,RB,4/17/24,24,9,BRN.RB.24.9,Head,332,340,"Start: (45.43387, -112.25721) End: (45.44488, -112.27897)",U,Y,Y,N,Y
+BRN,RB,4/17/24,24,10,BRN.RB.24.10,Head,300,265,"Start: (45.43387, -112.25721) End: (45.44488, -112.27897)",U,Y,Y,N,Y
+BRN,RB,4/17/24,24,11,BRN.RB.24.11,Head,277,205,"Start: (45.43387, -112.25721) End: (45.44488, -112.27897)",U,Y,Y,N,Y
+BRN,RB,4/17/24,24,12,BRN.RB.24.12,Head,339,360,"Start: (45.43387, -112.25721) End: (45.44488, -112.27897)",U,Y,Y,N,Y
+BRN,RB,4/17/24,24,13,BRN.RB.24.13,Head,247,140,"Start: (45.43387, -112.25721) End: (45.44488, -112.27897)",U,Y,Y,N,Y
+BRN,RB,4/17/24,24,14,BRN.RB.24.14,Head,484,915,"Start: (45.43387, -112.25721) End: (45.44488, -112.27897)",U,Y,Y,N,Y
+BRN,RB,4/17/24,24,15,BRN.RB.24.15,Head,404,540,"Start: (45.43387, -112.25721) End: (45.44488, -112.27897)",U,Y,Y,N,Y
+BRN,RB,4/17/24,24,16,BRN.RB.24.16,Head,320,330,"Start: (45.43387, -112.25721) End: (45.44488, -112.27897)",U,Y,Y,N,Y
+BRN,RB,4/17/24,24,17,BRN.RB.24.17,Head,440,730,"Start: (45.43387, -112.25721) End: (45.44488, -112.27897)",U,Y,Y,N,Y
+BRN,RB,4/17/24,24,18,BRN.RB.24.18,Head,398,610,"Start: (45.43387, -112.25721) End: (45.44488, -112.27897)",U,Y,Y,N,Y
+BRN,RB,4/17/24,24,19,BRN.RB.24.19,Head,410,620,"Start: (45.43387, -112.25721) End: (45.44488, -112.27897)",U,Y,Y,N,Y
+BRN,RB,4/17/24,24,20,BRN.RB.24.20,Head,422,720,"Start: (45.43387, -112.25721) End: (45.44488, -112.27897)",U,Y,Y,N,Y
+BRN,RB,4/17/24,24,21,BRN.RB.24.21,Head,422,560,"Start: (45.43387, -112.25721) End: (45.44488, -112.27897)",U,Y,Y,N,Y
+BRN,RB,4/17/24,24,22,BRN.RB.24.22,Head,376,465,"Start: (45.43387, -112.25721) End: (45.44488, -112.27897)",U,Y,Y,N,Y
+BRN,RB,4/17/24,24,23,BRN.RB.24.23,Head,390,540,"Start: (45.43387, -112.25721) End: (45.44488, -112.27897)",U,Y,Y,N,Y
+BRN,RB,4/17/24,24,24,BRN.RB.24.24,Head,370,500,"Start: (45.43387, -112.25721) End: (45.44488, -112.27897)",U,Y,Y,N,Y
+BRN,RB,4/17/24,24,25,BRN.RB.24.25,Head,480,955,"Start: (45.43387, -112.25721) End: (45.44488, -112.27897)",U,Y,Y,N,Y
+BRN,RB,4/17/24,24,26,BRN.RB.24.26,Head,476,1020,"Start: (45.43387, -112.25721) End: (45.44488, -112.27897)",U,Y,Y,N,Y
+BRN,RB,4/17/24,24,27,BRN.RB.24.27,Head,429,685,"Start: (45.43387, -112.25721) End: (45.44488, -112.27897)",U,Y,Y,N,Y
+BRN,Mill,8/19/24,24,1,BRN.Mill.24.1,Whole,298,344.2,Mill Creek,F,Y,Y,Y,Y
+BRN,RB,4/21/20,20,1,BRN.RB.20.1,Just Otos,110,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,2,BRN.RB.20.2,Just Otos,120,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,3,BRN.RB.20.3,Just Otos,119,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,4,BRN.RB.20.4,Just Otos,115,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,5,BRN.RB.20.5,Just Otos,130,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,6,BRN.RB.20.6,Just Otos,117,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,7,BRN.RB.20.7,Just Otos,142,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,8,BRN.RB.20.8,Just Otos,128,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,9,BRN.RB.20.9,Just Otos,139,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,10,BRN.RB.20.10,Just Otos,140,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,11,BRN.RB.20.11,Just Otos,299,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,12,BRN.RB.20.12,Just Otos,302,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,13,BRN.RB.20.13,Just Otos,262,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,14,BRN.RB.20.14,Just Otos,277,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,15,BRN.RB.20.15,Just Otos,407,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,16,BRN.RB.20.16,Just Otos,371,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,17,BRN.RB.20.17,Just Otos,404,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,18,BRN.RB.20.18,Just Otos,402,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,19,BRN.RB.20.19,Just Otos,290,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,20,BRN.RB.20.20,Just Otos,376,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,21,BRN.RB.20.21,Just Otos,469,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,22,BRN.RB.20.22,Just Otos,416,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,23,BRN.RB.20.23,Just Otos,467,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,24,BRN.RB.20.24,Just Otos,276,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,25,BRN.RB.20.25,Just Otos,484,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,26,BRN.RB.20.26,Just Otos,437,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,27,BRN.RB.20.27,Just Otos,465,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,28,BRN.RB.20.28,Just Otos,451,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,29,BRN.RB.20.29,Just Otos,445,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,30,BRN.RB.20.30,Just Otos,270,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,31,BRN.RB.20.31,Just Otos,283,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,32,BRN.RB.20.32,Just Otos,419,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,33,BRN.RB.20.33,Just Otos,384,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,34,BRN.RB.20.34,Just Otos,418,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,35,BRN.RB.20.35,Just Otos,401,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,36,BRN.RB.20.36,Just Otos,365,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,37,BRN.RB.20.37,Just Otos,398,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,38,BRN.RB.20.38,Just Otos,483,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,39,BRN.RB.20.39,Just Otos,464,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,40,BRN.RB.20.40,Just Otos,493,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,41,BRN.RB.20.41,Just Otos,451,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,42,BRN.RB.20.42,Just Otos,451,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,43,BRN.RB.20.43,Just Otos,372,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,44,BRN.RB.20.44,Just Otos,411,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,45,BRN.RB.20.45,Just Otos,528,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,46,BRN.RB.20.46,Just Otos,369,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,47,BRN.RB.20.47,Just Otos,477,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,48,BRN.RB.20.48,Just Otos,245,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,49,BRN.RB.20.49,Just Otos,252,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,50,BRN.RB.20.50,Just Otos,257,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,51,BRN.RB.20.51,Just Otos,309,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,52,BRN.RB.20.52,Just Otos,286,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,53,BRN.RB.20.53,Just Otos,308,,Vigilante Section,,,,,
+BRN,RB,4/21/20,20,54,BRN.RB.20.54,Just Otos,530,,Vigilante Section,,,,,

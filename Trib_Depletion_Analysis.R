@@ -9,7 +9,6 @@ library(ggplot2)
 library(lme4)
 library(lmerTest)
 library(dplyr)
-library(emmeans)
 library(stringr)
 library(tidyverse)
 library(ggpubr)
@@ -18,10 +17,6 @@ library(broom)
 library(knitr)
 library(readxl)
 library(writexl)
-library(outliers)
-library(psych)
-library(vtable)
-library(lattice)
 library(magrittr)
 library(mgcv)
 library(grid)
@@ -30,26 +25,36 @@ library(FSA)
 ###### Loading Data ######
 
 trib_fish_data_full = read.csv("2024 Trib Fish Data.csv")
-trib_fish_data_full$Length_mm = as.numeric(trib_data$Length_mm)
-trib_fish_data_full$Mass_g = as.numeric(trib_data$Mass_g)
-trib_fish_data_full$Site = as.factor(trib_data$Site)
+trib_fish_data_full$Length_mm = as.numeric(trib_fish_data_full$Length_mm)
+trib_fish_data_full$Mass_g = as.numeric(trib_fish_data_full$Mass_g)
+trib_fish_data_full$Site = as.factor(trib_fish_data_full$Site)
 
 depletion_data = trib_fish_data_full[trib_fish_data_full$Method %in% c("Pass 1", "Pass 2", "Pass 3"),]
 depletion_data_onlytrout = depletion_data[depletion_data$Species %in% c("BRN", "RBT", "BRK"),]
 
-reach_lengths <- c("Alder" = 200, "Blacktail" = 250, "Camp" = 200, "Canyon" = 200, "Cherry" = 250, "Cox Slough" = 200,
-                   "Deep" = 230, "Grasshopper" = 250, "Mill" = 200, "Moose" = 200, "Silver Springs" = 200,
-                   "Stone" = 200, "Trapper" = 250, "Wisconsin" = 250)
+depletion_dat_onlytrout_juveniles <- depletion_data_onlytrout %>%
+  filter(
+    (Species == "BRN" & Length_mm <= 140) |
+      (Species == "RBT" & Length_mm <= 90)
+  )
+
+reach_lengths <- as.factor(c("Alder" = 200, "Blacktail" = 250, "Camp" = 200, "Canyon" = 200, "Cherry" = 250, "Cox Slough" = 200,
+                   "Deep" = 230, "Grasshopper" = 250, "Mill"= 200, "Moose" = 200, "Silver Springs" = 200,
+                   "Stone" = 200, "Trapper" = 250, "Wisconsin" = 250))
 
 by_pass = depletion_data_onlytrout %>%
   group_by(Method, Site, Species) %>%
   summarize(Catch = n()) %>%
   mutate(Reach_Length_m = reach_lengths[Site])
 
+by_pass_juv = depletion_dat_onlytrout_juveniles %>%
+  group_by(Method, Site, Species) %>%
+  summarize(Catch = n()) %>%
+  mutate(Reach_Length_m = reach_lengths[Site])
 
 #### Leslie ####
 
-leslie_dat1 = by_pass %>%
+leslie_dat1 = by_pass_juv %>%
   group_by(Site, Species, Method, Catch, Reach_Length_m) %>%
   reframe(cpe = Catch/Reach_Length_m) # calculate catch per effort vector
 
@@ -224,136 +229,136 @@ plot(leslie_model_wisconsin_BRN)
 #### K Pass ####
 
 # Alder 
-k_alder_BRN = subset(by_pass, Site == "Alder" & Species == "BRN") # BRN
-k_alder_est_BRN = removal(k_alder_BRN$Catch)
+k_alder_BRN = subset(by_pass_juv, Site == "Alder" & Species == "BRN") # BRN
+k_alder_BRN_est = removal(k_alder_BRN$Catch)
 summary(k_alder_BRN_est)
 confint(k_alder_BRN_est) # lower se than leslie
 
 # Blacktail 
-k_blacktail_BRN = subset(by_pass, Site == "Blacktail" & Species == "BRN") # BRN
+k_blacktail_BRN = subset(by_pass_juv, Site == "Blacktail" & Species == "BRN") # BRN
 k_blacktail_BRN_est = removal(k_blacktail_BRN$Catch)
 summary(k_blacktail_BRN_est)
 confint(k_blacktail_BRN_est) # lower se than leslie
 
-k_blacktail_BRK = subset(by_pass, Site == "Blacktail" & Species == "BRK") # BRK - cannot calculate with only 1 pass of catch data
+k_blacktail_BRK = subset(by_pass_juv, Site == "Blacktail" & Species == "BRK") # BRK - cannot calculate with only 1 pass of catch data
 k_blacktail_BRK_est = removal(k_blacktail_BRK$Catch)
 summary(k_blacktail_BRK_est)
 confint(k_blacktail_BRK_est) # cannot calculate with only 1 pass of catch data
 
 # Camp
-k_camp_BRN = subset(by_pass, Site == "Camp" & Species == "BRN") # BRN
+k_camp_BRN = subset(by_pass_juv, Site == "Camp" & Species == "BRN") # BRN
 k_camp_BRN_est = removal(k_camp_BRN$Catch)
 summary(k_camp_BRN_est)
 confint(k_camp_BRN_est) # lower se than leslie
 
-k_camp_BRK = subset(by_pass, Site == "Camp" & Species == "BRK") # RBT
+k_camp_BRK = subset(by_pass_juv, Site == "Camp" & Species == "BRK") # RBT
 k_camp_BRK_est = removal(k_camp_BRK$Catch)
 summary(k_camp_BRK_est)
 confint(k_camp_BRK_est) # lower se than leslie
 
 # Canyon
-k_canyon_BRN = subset(by_pass, Site == "Canyon" & Species == "BRN") # BRN
+k_canyon_BRN = subset(by_pass_juv, Site == "Canyon" & Species == "BRN") # BRN
 k_canyon_BRN_est = removal(k_canyon_BRN$Catch)
 summary(k_canyon_BRN_est)
 confint(k_canyon_BRN_est) # lower se than leslie
 
-k_canyon_RBT = subset(by_pass, Site == "Canyon" & Species == "RBT") # RBT
+k_canyon_RBT = subset(by_pass_juv, Site == "Canyon" & Species == "RBT") # RBT
 k_canyon_RBT_est = removal(k_canyon_RBT$Catch)
 summary(k_canyon_RBT_est)
 confint(k_canyon_RBT_est) # higher se than leslie
 
-k_canyon_BRK = subset(by_pass, Site == "Canyon" & Species == "BRK") #BRK
+k_canyon_BRK = subset(by_pass_juv, Site == "Canyon" & Species == "BRK") #BRK
 k_canyon_BRK_est = removal(k_canyon_BRK$Catch)
 summary(k_canyon_BRK_est)
 confint(k_canyon_BRK_est) # lower se than leslie
 
 # Cherry
-k_cherry_BRN = subset(by_pass, Site == "Cherry") # BRN only
+k_cherry_BRN = subset(by_pass_juv, Site == "Cherry") # BRN only
 k_cherry_BRN_est  = removal(k_cherry_BRN$Catch)
 summary(k_cherry_BRN_est)
 confint(k_cherry_BRN_est) # lower se than leslie
 
 # Cox
-k_cox_BRN = subset(by_pass, Site == "Cox Slough" & Species == "BRN") # BRN only
+k_cox_BRN = subset(by_pass_juv, Site == "Cox Slough" & Species == "BRN") # BRN only
 k_cox_BRN_est = removal(k_cox_BRN$Catch)
 summary(k_cox_BRN_est)
 confint(k_cox_BRN_est) 
 
 # Deep
-k_deep_BRN = subset(by_pass, Site == "Deep" & Species == "BRN") # BRN
+k_deep_BRN = subset(by_pass_juv, Site == "Deep" & Species == "BRN") # BRN
 k_deep_BRN_est = removal(k_deep_BRN$Catch)
 summary(k_deep_BRN_est) # leslie does not work, this is best
 confint(k_deep_BRN_est) 
 
-k_deep_RBT = subset(by_pass, Site == "Deep" & Species == "RBT") # RBT
+k_deep_RBT = subset(by_pass_juv, Site == "Deep" & Species == "RBT") # RBT
 k_deep_RBT_est = removal(k_deep_RBT$Catch)
 summary(k_deep_RBT_est) # higher se than leslie
 confint(k_deep_RBT_est) 
 
-k_deep_BRK = subset(by_pass, Site == "Deep" & Species == "BRK") # BRK
+k_deep_BRK = subset(by_pass_juv, Site == "Deep" & Species == "BRK") # BRK
 k_deep_BRK_est = removal(k_deep_BRK$Catch)
 summary(k_deep_BRK_est) # leslie does not work, this is best
 confint(k_deep_BRK_est) 
 
 # Grasshopper
-k_grasshopper_BRN = subset(by_pass, Site == "Grasshopper" & Species == "BRN") # BRN
+k_grasshopper_BRN = subset(by_pass_juv, Site == "Grasshopper" & Species == "BRN") # BRN
 k_grasshopper_BRN_est = removal(k_grasshopper_BRN$Catch)
 summary(k_grasshopper_BRN_est) # leslie method better due to very good regression fit
 confint(k_grasshopper_BRN_est) 
 
-k_grasshopper_BRK = subset(by_pass, Site == "Grasshopper" & Species == "BRK") # BRK
+k_grasshopper_BRK = subset(by_pass_juv, Site == "Grasshopper" & Species == "BRK") # BRK
 k_grasshopper_BRK_est = removal(k_grasshopper_BRK$Catch)
 summary(k_grasshopper_BRK_est) # higher se than leslie
 confint(k_grasshopper_BRK_est) 
 
 # Mill
-k_mill= subset(by_pass, Site == "Mill" & Species == "BRN") # BRN only
+k_mill= subset(by_pass_juv, Site == "Mill" & Species == "BRN") # BRN only
 k_mill_BRN_est = removal(k_mill$Catch)
 summary(k_mill_BRN_est) # higher se than leslie
 confint(k_mill_BRN_est) 
 
 # Moose
-k_moose_BRN = subset(by_pass, Site == "Moose" & Species == "BRN") # BRN
+k_moose_BRN = subset(by_pass_juv, Site == "Moose" & Species == "BRN") # BRN
 k_moose_BRN_est = removal(k_moose_BRN$Catch)
 summary(k_moose_BRN_est)
 confint(k_moose_BRN_est) # lower se than leslie
 
-k_moose_RBT = subset(by_pass, Site == "Moose" & Species == "RBT") # RBT
+k_moose_RBT = subset(by_pass_juv, Site == "Moose" & Species == "RBT") # RBT
 k_moose_RBT_est = removal(k_moose_RBT$Catch)
 summary(k_moose_RBT_est)
 confint(k_moose_RBT_est) # lower se than leslie
 
 # Silver Springs
-k_silver_BRN = subset(by_pass, Site == "Silver Springs" & Species == "BRN") # BRN
+k_silver_BRN = subset(by_pass_juv, Site == "Silver Springs" & Species == "BRN") # BRN
 k_silver_BRN_est = removal(k_silver_BRN$Catch)
 summary(k_silver_BRN_est)
 confint(k_silver_BRN_est) # higher se than leslie
 
-k_silver_RBT = subset(by_pass, Site == "Silver Springs" & Species == "RBT") # RBT
+k_silver_RBT = subset(by_pass_juv, Site == "Silver Springs" & Species == "RBT") # RBT
 k_silver_RBT_est = removal(k_silver_RBT$Catch)
 summary(k_silver_RBT_est)
 confint(k_silver_RBT_est) # higher se than leslie
 
 # Stone
-k_stone= subset(by_pass, Site == "Stone" & Species == "BRN") # BRN only
+k_stone= subset(by_pass_juv, Site == "Stone" & Species == "BRN") # BRN only
 k_stone_BRN_est = removal(k_stone$Catch)
 summary(k_stone_BRN_est)
 confint(k_stone_BRN_est) # leslie does not work, this is better
 
 # Trapper
-k_trapper= subset(by_pass, Site == "Trapper" & Species == "BRN") # BRN only 
+k_trapper= subset(by_pass_juv, Site == "Trapper" & Species == "BRN") # BRN only 
 k_trapper_BRN_est = removal(k_trapper$Catch)
 summary(k_trapper_BRN_est) 
 confint(k_trapper_BRN_est) # higher se than leslie
 
 # Wisconsin
-k_wisconsin= subset(by_pass, Site == "Wisconsin" & Species == "BRN") # BRN only 
+k_wisconsin= subset(by_pass_juv, Site == "Wisconsin" & Species == "BRN") # BRN only 
 k_wisconsin_BRN_est = removal(k_wisconsin$Catch)
 summary(k_wisconsin_BRN_est)
 confint(k_wisconsin_BRN_est) # higher se than leslie
 
 
-#### JAGS Model ####
+#### JAGS Model 1 ####
 library(rjags)
 library(R2jags)
 library(here)
@@ -407,7 +412,7 @@ mod_lm$BUGSoutput$sims.list$Np %>% hist()
 mod_lm$BUGSoutput$sims.list$q %>% hist()
 mod_lm$BUGSoutput$sims.list$Np %>% quantile(c(0.0275,0.975))
 
-#### JAGS Estimation ####
+#### JAGS Estimation 1 ####
 # Alder
 alder_catch = leslie_alder$Catch # observed data
 alder_npass = 3
@@ -669,7 +674,7 @@ leslie_uci = c(confint(leslie_model_alder)[3], confint(leslie_model_blacktail_BR
               confint(leslie_model_silver_BRN)[3],confint(leslie_model_silver_RBT)[3],confint(leslie_model_trapper_BRN)[3],
               confint(leslie_model_wisconsin_BRN)[3])
 
-k_estimate = c(summary(k_alder_BRN_est)[1], summary(k_blacktail_BRN_est)[1],
+k_estimate = c(summary(k_alder_BRN_est)[1],
                summary(k_camp_BRN_est)[1], summary(k_camp_BRK_est)[1], summary(k_canyon_BRN_est)[1],
                summary(k_canyon_RBT_est)[1], summary(k_canyon_BRK_est)[1], summary(k_cherry_BRN_est)[1],
                summary(k_cox_BRN_est)[1], summary(k_deep_BRN_est)[1],
@@ -678,7 +683,7 @@ k_estimate = c(summary(k_alder_BRN_est)[1], summary(k_blacktail_BRN_est)[1],
                summary(k_silver_BRN_est)[1], summary(k_silver_RBT_est)[1], summary(k_trapper_BRN_est)[1],
                summary(k_wisconsin_BRN_est)[1])
 
-k_lci = c(confint(k_alder_BRN_est)[1], confint(k_blacktail_BRN_est)[1],
+k_lci = c(confint(k_alder_BRN_est)[1],
                confint(k_camp_BRN_est)[1], confint(k_camp_BRK_est)[1], confint(k_canyon_BRN_est)[1],
                confint(k_canyon_RBT_est)[1], confint(k_canyon_BRK_est)[1], confint(k_cherry_BRN_est)[1],
                confint(k_cox_BRN_est)[1], confint(k_deep_BRN_est)[1],
@@ -687,7 +692,7 @@ k_lci = c(confint(k_alder_BRN_est)[1], confint(k_blacktail_BRN_est)[1],
                confint(k_silver_BRN_est)[1], confint(k_silver_RBT_est)[1], confint(k_trapper_BRN_est)[1],
                confint(k_wisconsin_BRN_est)[1])
 
-k_uci = c(confint(k_alder_BRN_est)[3], confint(k_blacktail_BRN_est)[3],
+k_uci = c(confint(k_alder_BRN_est)[3],
           confint(k_camp_BRN_est)[3], confint(k_camp_BRK_est)[3], confint(k_canyon_BRN_est)[3],
           confint(k_canyon_RBT_est)[3], confint(k_canyon_BRK_est)[3], confint(k_cherry_BRN_est)[3],
           confint(k_cox_BRN_est)[3], confint(k_deep_BRN_est)[3],
@@ -696,28 +701,28 @@ k_uci = c(confint(k_alder_BRN_est)[3], confint(k_blacktail_BRN_est)[3],
           confint(k_silver_BRN_est)[3], confint(k_silver_RBT_est)[3], confint(k_trapper_BRN_est)[3],
           confint(k_wisconsin_BRN_est)[3])
 
-Site = c("Alder", "Blacktail", "Camp", "Camp", "Canyon","Canyon","Canyon","Cherry","Cox","Deep","Grasshopper","Grasshopper",
+Site = c("Alder","Camp", "Camp", "Canyon","Canyon","Canyon","Cherry","Cox","Deep","Grasshopper","Grasshopper",
          "Mill", "Moose", "Moose", "Silver", "Silver", "Trapper","Wisconsin")
 
-Species = c("BRN", "BRN","BRN","BRK","BRN","RBT","BRK","BRN","BRN","RBT","BRN","BRK","BRN","BRN","RBT",
+Species = c("BRN","BRN","BRK","BRN","RBT","BRK","BRN","BRN","RBT","BRN","BRK","BRN","BRN","RBT",
             "BRN","RBT","BRN","BRN")
 
-jags_est = c(mod_lm_alder$BUGSoutput$summary["Np",1], mod_lm_blacktail$BUGSoutput$summary["Np",1],mod_lm_camp$BUGSoutput$summary["Np",1],
+jags_est = c(mod_lm_alder$BUGSoutput$summary["Np",1],mod_lm_camp$BUGSoutput$summary["Np",1],
              mod_lm_canyon$BUGSoutput$summary["Np",1],mod_lm_cherry$BUGSoutput$summary["Np",1],mod_lm_cox$BUGSoutput$summary["Np",1],
              mod_lm_grasshopper$BUGSoutput$summary["Np",1],mod_lm_mill$BUGSoutput$summary["Np",1],mod_lm_moose$BUGSoutput$summary["Np",1],
              mod_lm_silver$BUGSoutput$summary["Np",1],mod_lm_trapper$BUGSoutput$summary["Np",1],mod_lm_wisconsin$BUGSoutput$summary["Np",1])
   
-jags_lci = c(mod_lm_alder$BUGSoutput$summary["Np",3], mod_lm_blacktail$BUGSoutput$summary["Np",3],mod_lm_camp$BUGSoutput$summary["Np",3],
+jags_lci = c(mod_lm_alder$BUGSoutput$summary["Np",3],mod_lm_camp$BUGSoutput$summary["Np",3],
              mod_lm_canyon$BUGSoutput$summary["Np",3],mod_lm_cherry$BUGSoutput$summary["Np",3],mod_lm_cox$BUGSoutput$summary["Np",3],
              mod_lm_grasshopper$BUGSoutput$summary["Np",3],mod_lm_mill$BUGSoutput$summary["Np",3],mod_lm_moose$BUGSoutput$summary["Np",3],
              mod_lm_silver$BUGSoutput$summary["Np",3],mod_lm_trapper$BUGSoutput$summary["Np",3],mod_lm_wisconsin$BUGSoutput$summary["Np",3])
 
-jags_uci = c(mod_lm_alder$BUGSoutput$summary["Np",7], mod_lm_blacktail$BUGSoutput$summary["Np",7],mod_lm_camp$BUGSoutput$summary["Np",7],
+jags_uci = c(mod_lm_alder$BUGSoutput$summary["Np",7],mod_lm_camp$BUGSoutput$summary["Np",7],
              mod_lm_canyon$BUGSoutput$summary["Np",7],mod_lm_cherry$BUGSoutput$summary["Np",7],mod_lm_cox$BUGSoutput$summary["Np",7],
              mod_lm_grasshopper$BUGSoutput$summary["Np",7],mod_lm_mill$BUGSoutput$summary["Np",7],mod_lm_moose$BUGSoutput$summary["Np",7],
              mod_lm_silver$BUGSoutput$summary["Np",7],mod_lm_trapper$BUGSoutput$summary["Np",7],mod_lm_wisconsin$BUGSoutput$summary["Np",7])
 
-jags_Site = c("Alder", "Blacktail", "Camp", "Canyon","Cherry","Cox","Grasshopper",
+jags_Site = c("Alder","Camp", "Canyon","Cherry","Cox","Grasshopper",
          "Mill", "Moose", "Silver", "Trapper","Wisconsin")
 
 
@@ -756,18 +761,40 @@ jags_brn <- jags_brn %>% # adding method and renaming columns
   mutate(Method = "JAGS") %>%
   rename("Np" = jags_est, "lci" = jags_lci, "uci" = jags_uci, "Site" = jags_Site, )
 
-combined_data <- bind_rows(k_pass_brn, jags_brn) # combining JAGS and K-Pass data
 
-ggplot(combined_data, aes(x=Site, y = Np, color = Method)) +
+##### Final data file #####
+combined_data <- bind_rows(k_pass_brn, jags_brn) # combining JAGS and K-Pass data
+combined_data2 <- cbind(combined_data, reach_lengths)
+
+reach_lengths <- c("Alder" = 200, "Blacktail" = 250, "Camp" = 200, "Canyon" = 200, "Cherry" = 250, "Cox Slough" = 200,
+                             "Deep" = 230, "Grasshopper" = 250, "Mill"= 200, "Moose" = 200, "Silver" = 200,
+                             "Stone" = 200, "Trapper" = 250, "Wisconsin" = 250, "Cox" = 200)
+
+combined_data2 <- combined_data %>%
+  mutate(Reach_Length_km = (reach_lengths[Site])/1000) %>% # assigning reach lengths in km
+  mutate(yoy_per_km = Np/Reach_Length_km) %>% # standardizing Np by km
+  mutate(lci_std = lci/Reach_Length_km, # standardizing lci and uci by km
+         uci_std = uci/Reach_Length_km)
+
+view(combined_data2)
+
+write.csv(combined_data, "depletion_dat.csv")
+
+depletion_plot = 
+ggplot(combined_data2, aes(x=factor(Site, level=c('Cherry', 'Trapper', 'Moose', 'Canyon', 'Camp','Deep', 
+                                                 'Cox', 'Blacktail','Stone','Grasshopper',
+                                                 'Wisconsin', 'Mill', 'Silver','Alder')), 
+                                                  y = yoy_per_km, color = Method)) +
   geom_point(position = position_dodge(0.8), size = 3) +
-  geom_errorbar(aes(ymin = lci, ymax = uci, width = 0.5, linetype = "95% CI",), 
+  geom_errorbar(aes(ymin = lci_std, ymax = uci_std, width = 0.5, linetype = "95% CI",), 
                 position = position_dodge(0.8), size = 0.8) +
-  scale_y_continuous(breaks = seq(-205, 2200, by = 200)) +
+  scale_y_continuous(breaks = seq(0, 4000, by = 400)) +
   theme_grey(base_size = 20) +
-  theme(axis.text.x = element_text(angle = -45, hjust = -0.05)) +
+  theme(axis.title.x=element_blank(), axis.text.x = element_text(angle = -45, hjust = -0.05)) +
   scale_linetype_manual(values = c("95% CI" = "solid"), name = "Error Bars") +
-  labs (y = "Np") +
-  ggtitle ("JAGS vs K-Pass Abundance:BRN")
+  labs (y = "YOY / km", x = "Site")
+
+ggsave(depletion_plot, file = "depletion.jpg", dpi = 600)
 
 
 ## Comaprison of K-Pass and Leslie
